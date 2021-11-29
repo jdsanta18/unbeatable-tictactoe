@@ -1,14 +1,45 @@
 body{
     background-color: blue;
 }
+.game{
+    z-index: -1;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.gamegrid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
 
 .square{
+    text-align: center;
     border-width: 1px;
     font-size: 100px;
+    padding: 1px;
+    width: 3em;
+    height: 140px;
 }
 
 .turn{
+    text-align: center;
     font-size: 80px;
     color: gold;
+}
+
+.winScreen{
+    top: 50%;
+    left: 50%;
+    transform:translateX(-50%)translateY(-50%);
+    display: block;
+    width:fit-content;
+    background-color: white;
+    z-index: 0;
+    border-radius: 5%;
+    border-width: 5px;
+    font-size: 80px;
+    padding: 10px;
+    position: absolute;
+    text-align: center;
 }
 
