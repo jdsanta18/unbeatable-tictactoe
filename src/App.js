@@ -33,6 +33,8 @@ class Square extends React.Component{
   }
 }
 
+
+
 function WinScreen(props){
   return(
     <div className="winScreen">
@@ -46,18 +48,28 @@ class Board extends React.Component{
   constructor(props){
     super(props);
 
-    this.state = {squares : Array(9).fill(" "), isPlayerTurn: true, playerWon: false, cpuWon: false, isDraw: false};
+    this.state = {squares : Array(9).fill(" "), isPlayerTurn: true, winner: undefined};
 
     this.handleTurnChange = this.handleTurnChange.bind(this);
-    this.checkWinner = this.checkWinner.bind(this);
   } 
 
+  getMoveCount(boardState){
+    let moveCount = 0;
 
+    for(let i = 0; i < boardState.length; i++){
+      if(boardState[i] !== " "){
+        moveCount++;
+      } 
+    }
+
+    return moveCount;
+  }
 
   handleTurnChange(squareID){
+
     if(this.state.squares[squareID] !== "X" && this.state.squares[squareID] !== "O"){
       const newSquaresArray = this.state.squares;
-
+      
       if(this.state.isPlayerTurn){
         newSquaresArray[squareID] = "X";
       }else{
@@ -65,50 +77,109 @@ class Board extends React.Component{
       }
 
       this.setState({squares: newSquaresArray});
-      this.checkWinner();
+
+      const winnerState = this.checkWinner(this.state.squares);
+      this.setState({winner: winnerState});
+      console.log(this.state.movesCompleted);
 
       const nextTurn = !this.state.isPlayerTurn;
-      this.setState({isPlayerTurn: nextTurn});  
+      this.setState({isPlayerTurn: nextTurn});
+
+      this.cpuMove();  
     }  
   }
 
-  checkWinner(){                                  
 
+  minimax(boardState, isCpuTurn){
+    if(this.checkWinner(boardState) !== undefined){
+      return this.score(boardState);
+    }
+
+    let possibleMoves = [];
+
+    for(let i = 0; i < boardState.length; i++){
+      if(boardState[i] === " "){
+        possibleMoves.unshift(i);
+      }
+    }
+
+    let scores = [];
+    let moves = [];
+
+    for(let i = 0; possibleMoves.length; i++){
+      let newBoard = [];
+      for(let i = 0; i < boardState.length; i++){
+        newBoard[i] = boardState[i];
+      }
+      newBoard[possibleMoves[i]] = "O";
+      
+      scores.push(this.minimax(newBoard, !isCpuTurn));
+      
+      moves.push(possibleMoves[i]);
+    }
+
+    if(isCpuTurn){
+      const maxScoreIndex = scores.indexOf(Math.max.apply(null, scores));
+      let choice = moves[maxScoreIndex];
+      return scores[maxScoreIndex];
+    }
+    else{
+      const minScoreIndex = scores.indexOf(Math.min.apply(null, scores));
+      let choice = moves[minScoreIndex];
+      return scores[minScoreIndex];
+    }
+
+  }
+
+  score(boardState){
+    if(this.checkWinner(boardState) === "Player"){
+      return -10;
+    }
+    else if(this.checkWinner(boardState) === "Cpu"){
+      return 10;
+    }
+    else{
+      return 0;
+    }
+  }
+
+  cpuMove(){
+    const isCpuTurn = true;
+    this.minimax(this.state.squares, isCpuTurn);
+  }
+
+  checkWinner(boardState){                                  
     const winArrays = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
-    let movesCompleted = 0;
+    let winner = undefined;
 
     for(let i = 0; i < winArrays.length; i++){
       let xCount = 0;
       let oCount = 0;
       for(let j = 0; j < winArrays[i].length; j++){
-        //console.log(winArrays[i][j]);
-        if(this.state.squares[winArrays[i][j]] === "X"){
-          console.log("one x added");
+        if(boardState[winArrays[i][j]] === "X"){
           xCount++;
         }
-        if(this.state.squares[winArrays[i][j]] === "O"){
+        if(boardState[winArrays[i][j]] === "O"){
           oCount++;
         }
       }
       if(xCount === 3){
-        this.setState({playerWon: true});
+        winner = "Player";
         break;
       }
       if(oCount === 3){
-        this.setState({cpuWon: true});
+        winner = "Cpu";
         break;
       }
     }
 
-    for(let i = 0; i < this.state.squares.length; i++){
-      if(this.state.squares[i] !== " "){
-        movesCompleted++;
-      }
+    if(this.getMoveCount(boardState) === 9 && winner === undefined){
+      winner = "Draw";
     }
 
-    if(movesCompleted === 9 && (!this.state.playerWon && !this.state.cpuWon)){
-      this.setState({isDraw: true});
-    }
+
+    //this.setState({winner});
+    return winner;   //for other functions
   }
 
   
@@ -123,14 +194,8 @@ class Board extends React.Component{
       currentTurn = "CPU turn";
     }
 
-    if(this.state.playerWon){
-      winScreen = <WinScreen winner={"Player Won!"} />
-    }
-    if(this.state.cpuWon){
-      winScreen = <WinScreen winner={"CPU won!"} />
-    }
-    if(this.state.isDraw){
-      winScreen = <WinScreen winner={"It´s a draw"} />
+    if(this.state.winner){
+      winScreen = <WinScreen winner={this.state.winner}/>
     }
 
 
