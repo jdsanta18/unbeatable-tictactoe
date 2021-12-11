@@ -1,3 +1,10 @@
+# Description
+
+### This app allows the user to play tic-tac-toe against an unbeatable CPU opponent on the web browser. 
+### The AI is still a work-in-progress.
+
+-------------------------------------------------------------------------------------------------------
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
