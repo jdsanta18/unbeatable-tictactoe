@@ -78,14 +78,13 @@ class Board extends React.Component{
 
       this.setState({squares: newSquaresArray});
 
-      const winnerState = this.checkWinner(this.state.squares);
+      let winnerState = this.checkWinner(this.state.squares);
       this.setState({winner: winnerState});
-      console.log(this.state.movesCompleted);
 
-      const nextTurn = !this.state.isPlayerTurn;
+      let nextTurn = !this.state.isPlayerTurn;
       this.setState({isPlayerTurn: nextTurn});
 
-      this.cpuMove();  
+      this.cpuMove();
     }  
   }
 
@@ -99,21 +98,25 @@ class Board extends React.Component{
 
     for(let i = 0; i < boardState.length; i++){
       if(boardState[i] === " "){
-        possibleMoves.unshift(i);
+        possibleMoves.push(i);
       }
     }
 
     let scores = [];
     let moves = [];
 
-    for(let i = 0; possibleMoves.length; i++){
-      let newBoard = [];
-      for(let i = 0; i < boardState.length; i++){
-        newBoard[i] = boardState[i];
-      }
-      newBoard[possibleMoves[i]] = "O";
+
+    for(let i = 0; i < possibleMoves.length; i++){
+      let tempBoard = Array.from(boardState);
       
-      scores.push(this.minimax(newBoard, !isCpuTurn));
+      if(isCpuTurn){
+        tempBoard[possibleMoves[i]] = "O";
+      }
+      else{
+        tempBoard[possibleMoves[i]] = "X";
+      }
+
+      scores.push(this.minimax(tempBoard, !isCpuTurn));
       
       moves.push(possibleMoves[i]);
     }
@@ -121,11 +124,13 @@ class Board extends React.Component{
     if(isCpuTurn){
       const maxScoreIndex = scores.indexOf(Math.max.apply(null, scores));
       let choice = moves[maxScoreIndex];
+      let newBoard = Array.from(boardState);                              //Have to improve this segment
+      newBoard[choice] = "O";
+      this.setState({squares: newBoard}, () => this.setState({isPlayerTurn: true, winner: this.checkWinner(this.state.squares)}));
       return scores[maxScoreIndex];
     }
     else{
       const minScoreIndex = scores.indexOf(Math.min.apply(null, scores));
-      let choice = moves[minScoreIndex];
       return scores[minScoreIndex];
     }
 
@@ -145,7 +150,7 @@ class Board extends React.Component{
 
   cpuMove(){
     const isCpuTurn = true;
-    this.minimax(this.state.squares, isCpuTurn);
+    this.minimax(this.state.squares, isCpuTurn);    
   }
 
   checkWinner(boardState){                                  
