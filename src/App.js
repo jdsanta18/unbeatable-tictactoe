@@ -36,10 +36,14 @@ class Square extends React.Component{
 
 
 function WinScreen(props){
+
+  function startAgain(){
+    window.location.reload();
+  }
   return(
-    <div className="winScreen">
+    <div className="winScreen fade-in">
       <p>{props.winner}</p>
-      <button>Start Again</button>
+      <button onClick={startAgain}>Start Again</button>
     </div>
   )
 }
@@ -89,7 +93,7 @@ class Board extends React.Component{
   }
 
 
-  minimax(boardState, isCpuTurn){
+  minimax(boardState, isCpuTurn, choice){
     if(this.checkWinner(boardState) !== undefined){
       return this.score(boardState);
     }
@@ -116,7 +120,7 @@ class Board extends React.Component{
         tempBoard[possibleMoves[i]] = "X";
       }
 
-      scores.push(this.minimax(tempBoard, !isCpuTurn));
+      scores.push(this.minimax(tempBoard, !isCpuTurn, choice));
       
       moves.push(possibleMoves[i]);
     }
@@ -150,7 +154,8 @@ class Board extends React.Component{
 
   cpuMove(){
     const isCpuTurn = true;
-    this.minimax(this.state.squares, isCpuTurn);    
+    //setTimeout(() => {this.minimax(this.state.squares, isCpuTurn)}, 1000);
+    this.minimax(this.state.squares, isCpuTurn);
   }
 
   checkWinner(boardState){                                  
@@ -182,12 +187,12 @@ class Board extends React.Component{
       winner = "Draw";
     }
 
-
-    //this.setState({winner});
     return winner;   //for other functions
   }
 
-  
+  /*sleep(milliseconds){
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+  }*/
 
   render(){
     let currentTurn;
