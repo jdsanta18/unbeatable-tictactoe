@@ -1,7 +1,6 @@
 # Description
 
 ### This app allows the user to play tic-tac-toe against an unbeatable CPU opponent on the web browser. 
-### The AI is still a work-in-progress.
 
 -------------------------------------------------------------------------------------------------------
 
