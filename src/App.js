@@ -41,7 +41,7 @@ function WinScreen(props){
     window.location.reload();
   }
   return(
-    <div className="winScreen fade-in">
+    <div className="winScreen">
       <p>{props.winner}</p>
       <button onClick={startAgain}>Start Again</button>
     </div>
